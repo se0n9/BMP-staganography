@@ -111,7 +111,11 @@ int main(int argc, char** argv){
                 }
                 read_header(fp_in, &(bmp_img.header));
                 bmp_img.data = read_data(fp_in, bmp_img);
-                print_hex(fp_out, bmp_img.data, sizeof(bmp_img.data));
+                int width = bmp_img.header.width_px;
+                int height = abs(bmp_img.header.height_px);
+                int row_size = ((width * 3 + 3) / 4) * 4;
+                int data_size = row_size * height;
+                print_hex(fp_out, bmp_img.data, data_size);
                 free(bmp_img.data);
                 fclose(fp_in);
                 fclose(fp_out);
