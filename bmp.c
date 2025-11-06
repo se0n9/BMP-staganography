@@ -101,7 +101,11 @@ char* read_message(const char* filename, int* message_length){
    }
    char* message = malloc(1+size);
    message[0] = (unsigned char)size;
-   fread(message+1, 1, size, fp);
+   size_t result = fread(message+1, 1, size, fp);
+   if(result != size){
+    fprintf(stderr, "Error: Failed to read message\n");
+    exit(1);
+   }
    *message_length = 1 + size;
    return message;
 }
@@ -135,6 +139,7 @@ void embed_message(unsigned char* data, int data_size, const char* message, int 
 }
 char* extract_message(unsigned char* data, int data_size, int* message_length){
    //Todo
+   return NULL;
 }
 
 int calcutate_data_size(BMPImage bmp_img){
