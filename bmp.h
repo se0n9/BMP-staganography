@@ -1,5 +1,5 @@
 #include <stdint.h>
-#pragma pack(1)
+#pragma pack(push, 1)
 
 typedef struct {                    // Total: 54 bytes
     uint16_t type;                  // Magic identifier: 0x4d42
@@ -19,6 +19,7 @@ typedef struct {                    // Total: 54 bytes
     uint32_t num_colors;            // Number of colors
     uint32_t important_colors;      // Important colors
 } BMPHeader;
+#pragma pack(pop);
 
 typedef struct {
     BMPHeader header;
