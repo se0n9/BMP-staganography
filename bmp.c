@@ -12,7 +12,7 @@ void change_color_grayscale(BMPImage bmp_img, int width, int height, BMPHeader h
 // Todo
 char* read_message(const char* filename, int* message_length);
 void embed_message(unsigned char* data, int data_size, const char* message, int message_length);
-char* extract_message(unsigned char* data, int data_size, int* message_length);
+char* extract_message(unsigned char* data, int data_size, int* extracted_length);
 int calcutate_data_size(BMPImage bmp_img);
 
 void read_header(FILE* fp, BMPHeader* header){
@@ -155,9 +155,38 @@ void embed_message(unsigned char* data, int data_size, const char* message, int 
         }   
     }
 }
-char* extract_message(unsigned char* data, int data_size, int* message_length){
-   //Todo
-   return NULL;
+char* extract_message(unsigned char* data, int data_size, int* extracted_length){
+    if(data_size < 8){//error check 1
+        fprintf(stderr, "Error: Data size too small to contain message length\n");
+        return NULL;
+    }
+   int byte_index = 0;
+   unsigned char message_length = 0;
+   for(int bit_i = 0 ; bit_i < 8 ; bit_i ++ ){
+        int bit = data[byte_index] & 1;
+        message_length = message_length|(bit << bit_i);
+        byte_index++;
+   }
+   int required_size = 8 + (message_length * 8);
+   if(required_size > data_size){//error check 2
+        fprintf(stderr, "Error: Data size too small to contain full message\n");
+        return NULL;
+   }
+   char* message = malloc(message_length+1);
+   unsigned char message_char = 0;
+   //current : byte_index = 8;
+   for(int i = 0 ; i < message_length ;  i ++){
+        for(int bit_i = 0 ; bit_i < 8 ; bit_i ++ ){
+            int bit = data[byte_index] & 1;
+            message_char = message_char|(bit << bit_i);
+            byte_index ++;
+        }
+        message[i] = message_char;
+        message_char = 0;
+   }
+   *extracted_length = message_length;
+   message[message_length]='\0';
+   return message;
 }
 
 int calcutate_data_size(BMPImage bmp_img){
@@ -171,7 +200,7 @@ int calcutate_data_size(BMPImage bmp_img){
 int main(int argc, char** argv){
     BMPImage bmp_img;
     int opt;
-    while((opt = getopt(argc, argv, "h:o:g:e:d")) != -1){
+    while((opt = getopt(argc, argv, "h:o:g:e:d:")) != -1){
         switch(opt){
             case 'h':{
                 FILE *fp_in = fopen(optarg, "rb");
@@ -267,10 +296,20 @@ int main(int argc, char** argv){
                     exit(1);
                 }
                 read_header(fp_in, &(bmp_img.header));
-                int message_length;
                 unsigned char* data = read_data(fp_in, bmp_img);
                 int data_size = calcutate_data_size(bmp_img);
                 fclose(fp_in);
+                int extracted_length;
+                char* message = extract_message(data, data_size, &extracted_length);
+                if(message==NULL){
+                    fprintf(stderr, "Error: message is not extracted!\n");
+                }
+                else{
+                    printf("Extracted message: %s\nLength: %d\n", message, extracted_length);
+                    free(message);
+                }
+                free(data);
+                break;
             }
             default:{
                 fprintf(stderr, "Usage: hw2BMP -h <input_bmp_file> | hw2BMP -o <input_bmp_file> <out_file> | hw2BMP -g <input_bmp_file> <output_bmp_file> ");
