@@ -19,7 +19,7 @@ typedef struct {                    // Total: 54 bytes
     uint32_t num_colors;            // Number of colors
     uint32_t important_colors;      // Important colors
 } BMPHeader;
-#pragma pack(pop);
+#pragma pack(pop)
 
 typedef struct {
     BMPHeader header;

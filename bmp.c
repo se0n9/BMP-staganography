@@ -7,10 +7,9 @@ void read_header(FILE* fp, BMPHeader* header);
 void print_header(BMPHeader* header);
 unsigned char* read_data(FILE* fp, BMPImage bmp_img);
 void print_hex(FILE* fp, unsigned char* data, int data_size);
-
+//void change_color_grayscale(BMPImage* bmp_img, bmp_img.header.width_px, bmp_img.header.height_px, bmp_img.header);
+void change_color_grayscale(BMPImage bmp_img, int width, int height, BMPHeader header);
 // Todo
-// void change_color_grayscale(BMPImage* bmp_img, bmp_img.header.width_px, bmp_img.header.height_px, bmp_img.header);
-
 char* read_message(const char* filename, int* message_length);
 void embed_message(unsigned char* data, int data_size, const char* message, int message_length);
 char* extract_message(unsigned char* data, int data_size, int* message_length);
@@ -50,6 +49,25 @@ void print_header(BMPHeader* header){
     printf("Image size: %d\n", header->image_size_bytes);
 }
 
+void change_color_grayscale(BMPImage bmp_img, int width, int height, BMPHeader header){
+    unsigned char* data = bmp_img.data;
+    int real_height = abs(height); //바깥쪽 반복문 횟수를 위해, (음수 방지)
+    int row_size = ((width * 3 + 3) / 4) * 4; // 패딩 포함한 한줄의 바이트 크기
+    for(int y = 0 ; y < real_height ; y++)//바깥 반복문(세로줄)
+    {
+        unsigned char* new_row_start = data + y * row_size;
+        for(int x = 0 ; x < width ; x++){
+            unsigned char* find_index = new_row_start + (x * 3);
+            unsigned char blue = *(find_index);
+            unsigned char green = *(find_index+1);
+            unsigned char red = *(find_index+2);
+            unsigned char grayscale = (unsigned char)((0.114 * blue) + (0.587 * green) + (0.299 * red));
+            *(find_index) = grayscale;
+            *(find_index+1) = grayscale;
+            *(find_index+2) = grayscale;
+        }
+    }
+}
 unsigned char* read_data(FILE* fp, BMPImage bmp_img){
     int data_size = calcutate_data_size(bmp_img);
     printf("data_size = %d\n", data_size);
@@ -194,8 +212,11 @@ int main(int argc, char** argv){
                 bmp_img.data = read_data(fp_in, bmp_img);
                 
                 //Todo
-                //change_color_grayscale(bmp_img, bmp_img.header.width_px, bmp_img.header.height_px, bmp_img.header);
+                change_color_grayscale(bmp_img, bmp_img.header.width_px, bmp_img.header.height_px, bmp_img.header);
                 //write_data(fp_out, &bmp_img);
+                int data_size = calcutate_data_size(bmp_img);
+                fwrite(&bmp_img.header, sizeof(BMPHeader), 1, fp_out);
+                fwrite(bmp_img.data, 1, data_size, fp_out);
                 free(bmp_img.data);
                 fclose(fp_in);
                 fclose(fp_out);
@@ -258,7 +279,6 @@ int main(int argc, char** argv){
             }
         } 
     }
-    
-    
+
     return 0;
 }
