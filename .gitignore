@@ -1,8 +1,10 @@
 .DS_Store
-main
+enc_flower.bmp 
+gray_flower.bmp
+hex_dump.txt
+rep1.txt
+rep2.txt 
 result.txt
-dump.txt
-enc.bmp
 # 실행 파일
 hw2BMP
 # 디버그 심볼 폴더

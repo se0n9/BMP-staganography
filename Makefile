@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -g -lm
+CFLAGS = -Wall -lm
 TARGET = hw2bmp
 INPUT_IMG = flower.bmp # 테스트용 이미지
 MSG_FILE = message.txt  # 테스트용 메시지 파일
