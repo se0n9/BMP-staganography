@@ -210,7 +210,7 @@ void print_usage(void){
 
 int main(int argc, char** argv){
     if(argc < 2){
-        fprintf(stderr, "Error: No option proviced\n");
+        fprintf(stderr, "Error: No option provided\n");
         print_usage();
         exit(1);
     }
