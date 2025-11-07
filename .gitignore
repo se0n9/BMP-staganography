@@ -3,3 +3,7 @@ main
 result.txt
 dump.txt
 enc.bmp
+# 실행 파일
+hw2BMP
+# 디버그 심볼 폴더
+hw2BMP.dSYM/
