@@ -68,7 +68,6 @@ void change_color_grayscale(BMPImage bmp_img, int width, int height, BMPHeader h
 }
 unsigned char* read_data(FILE* fp, BMPImage bmp_img){
     int data_size = calcutate_data_size(bmp_img);
-    printf("data_size = %d\n", data_size);
    unsigned char* data = malloc(data_size);
    if(data == NULL){
         fprintf(stderr, "Error: malloc failed. data_size = %d\n", data_size);
