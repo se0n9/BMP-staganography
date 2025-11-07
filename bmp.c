@@ -7,9 +7,7 @@ void read_header(FILE* fp, BMPHeader* header);
 void print_header(BMPHeader* header);
 unsigned char* read_data(FILE* fp, BMPImage bmp_img);
 void print_hex(FILE* fp, unsigned char* data, int data_size);
-//void change_color_grayscale(BMPImage* bmp_img, bmp_img.header.width_px, bmp_img.header.height_px, bmp_img.header);
 void change_color_grayscale(BMPImage bmp_img, int width, int height, BMPHeader header);
-// Todo
 char* read_message(const char* filename, int* message_length);
 void embed_message(unsigned char* data, int data_size, const char* message, int message_length);
 char* extract_message(unsigned char* data, int data_size, int* extracted_length);
@@ -197,7 +195,26 @@ int calcutate_data_size(BMPImage bmp_img){
     return data_size;
 }
 
+void print_usage(void){
+    fprintf(stderr, "\nUsage:\n");
+    fprintf(stderr, "  hw2BMP -h <input_bmp_file>\n");
+    fprintf(stderr, "      Print BMP header information\n\n");
+    fprintf(stderr, "  hw2BMP -o <input_bmp_file> <output_file>\n");
+    fprintf(stderr, "      Create hex dump of pixel data\n\n");
+    fprintf(stderr, "  hw2BMP -g <input_bmp_file> <output_bmp_file>\n");
+    fprintf(stderr, "      Convert to grayscale\n\n");
+    fprintf(stderr, "  hw2BMP -e <input_bmp> <message_file> <output_bmp>\n");
+    fprintf(stderr, "      Encrypt message into BMP file\n\n");
+    fprintf(stderr, "  hw2BMP -d <encrypted_bmp_file>\n");
+    fprintf(stderr, "      Decrypt and extract message from BMP file\n\n");
+}
+
 int main(int argc, char** argv){
+    if(argc < 2){
+        fprintf(stderr, "Error: No option proviced\n");
+        print_usage();
+        exit(1);
+    }
     BMPImage bmp_img;
     int opt;
     while((opt = getopt(argc, argv, "h:o:g:e:d:")) != -1){
@@ -252,10 +269,6 @@ int main(int argc, char** argv){
                 break;
             }
             case 'e':{
-                if(argc < optind + 2){
-                    fprintf(stderr, "Usage: -e <bmp_file> <message_file> <output_file>\n");
-                    exit(1);
-                }
                 FILE *fp_in = fopen(optarg, "rb");
                 if(fp_in == NULL){
                     perror("fopen");
@@ -286,10 +299,6 @@ int main(int argc, char** argv){
                 break;
             }
             case 'd':{
-                if(argc < 2){
-                    fprintf(stderr, "Usage: hw2BMP -d <encrypt_bmp_filename>\n");
-                    exit(1);
-                }
                 FILE *fp_in = fopen(optarg, "rb");
                 if(fp_in == NULL){
                     perror("fopen");
@@ -312,7 +321,7 @@ int main(int argc, char** argv){
                 break;
             }
             default:{
-                fprintf(stderr, "Usage: hw2BMP -h <input_bmp_file> | hw2BMP -o <input_bmp_file> <out_file> | hw2BMP -g <input_bmp_file> <output_bmp_file> ");
+                fprintf(stderr, "Error: Invalid option\n");
                 exit(1);
                 break;
             }
