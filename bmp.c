@@ -255,10 +255,7 @@ int main(int argc, char** argv){
                 }
                 read_header(fp_in, &(bmp_img.header));
                 bmp_img.data = read_data(fp_in, bmp_img);
-                
-                //Todo
                 change_color_grayscale(bmp_img, bmp_img.header.width_px, bmp_img.header.height_px, bmp_img.header);
-                //write_data(fp_out, &bmp_img);
                 int data_size = calcutate_data_size(bmp_img);
                 fwrite(&bmp_img.header, sizeof(BMPHeader), 1, fp_out);
                 fwrite(bmp_img.data, 1, data_size, fp_out);
